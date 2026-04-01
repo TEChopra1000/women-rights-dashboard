@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women's Rights Policy Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Women's Rights Global Policy</h1>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#abortion">Abortion Rights</a></li>
+                <li><a href="#maternity">Maternity Leave</a></li>
+                <li><a href="#marriage">Marriage Rights</a></li>
+                <li><a href="#bodily-rights">Bodily Autonomy</a></li>
+                <li><a href="#safety">Women's Safety</a></li>
+                <li><a href="#compare">Compare Countries</a></li>
+                <li><a href="#verify">Verify Sources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h2>Understanding Women's Rights Policies Worldwide</h2>
+                <p>Explore comprehensive data on women's rights policies across different countries, covering abortion access, maternity leave, marriage equality, and bodily autonomy.</p>
+                <a href="#overview" class="hero-cta">Explore the Data</a>
+            </div>
+        </section>
+
+        <section id="overview" class="overview">
+            <div class="container">
+                <h2>A snapshot of the world</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Countries Analyzed</h3>
+                        <span class="stat-number" data-target="195">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Policy Areas</h3>
+                        <span class="stat-number" data-target="5">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Last Updated</h3>
+                        <span class="stat-number">2025</span>
+                    </div>
+                </div>
+
+                <div class="country-explorer">
+                    <p class="explorer-label">Highlight a country across all charts</p>
+                    <div class="explorer-row">
+                        <select id="explorerSelect" class="country-dropdown">
+                            <option value="">Select a country...</option>
+                        </select>
+                        <button class="explorer-clear-btn" id="explorerClearBtn" onclick="clearExplorer()" style="display:none">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="abortion" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Abortion Rights</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Explore abortion laws and access across different countries, including legal status, gestational limits, and exceptions.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://www.who.int/news-room/fact-sheets/detail/abortion" target="_blank">World Health Organization - Abortion Facts</a></li>
+                                <li><a href="https://www.guttmacher.org/state-policy" target="_blank">Guttmacher Institute - State Policies</a></li>
+                                <li><a href="https://reproductiverights.org/maps/abortion-worldwide/" target="_blank">Center for Reproductive Rights - World Abortion Laws Map</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="abortionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="maternity" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Maternity Leave Policies</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Compare maternity leave duration, compensation rates, and job protection across countries.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://www.ilo.org/topics/maternity-protection" target="_blank">International Labour Organization - Maternity Protection</a></li>
+                                <li><a href="https://www.oecd.org/en/topics/sub-issues/parental-leave.html" target="_blank">OECD - Parental Leave Policies</a></li>
+                                <li><a href="https://www.unicef.org/early-childhood-development/family-friendly-policies" target="_blank">UNICEF - Family Friendly Policies</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="maternityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="marriage" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Marriage Rights</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Analyze marriage laws including minimum age, consent requirements, and equality provisions.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://www.unicef.org/protection/child-marriage" target="_blank">UNICEF - Child Marriage Data</a></li>
+                                <li><a href="https://www.ohchr.org/en/treaty-bodies/cedaw" target="_blank">UN - CEDAW Convention</a></li>
+                                <li><a href="https://www.equalitynow.org/legal-equality/" target="_blank">Equality Now - Legal Equality Reports</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="marriageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bodily-rights" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Bodily Autonomy Rights</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Examine laws related to bodily autonomy, including contraception access, female genital mutilation, and domestic violence protection.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://www.who.int/news-room/fact-sheets/detail/female-genital-mutilation" target="_blank">World Health Organization - FGM Facts</a></li>
+                                <li><a href="https://www.unwomen.org/en/what-we-do/ending-violence-against-women" target="_blank">UN Women - Violence Against Women</a></li>
+                                <li><a href="https://www.unfpa.org/swp" target="_blank">UNFPA - State of World Population</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="bodilyRightsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="safety" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Women's Safety</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Intimate partner violence (IPV) lifetime prevalence rates and the strength of domestic violence legal frameworks across countries. Based on WHO estimates and national surveys.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://www.who.int/publications/i/item/9789240022256" target="_blank">WHO — Violence Against Women Prevalence Estimates (2021)</a></li>
+                                <li><a href="https://www.who.int/news-room/fact-sheets/detail/violence-against-women" target="_blank">WHO — Violence Against Women Fact Sheet (2024)</a></li>
+                                <li><a href="https://giwps.georgetown.edu/the-index/" target="_blank">Georgetown — Women, Peace &amp; Security Index</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="safetyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="compare" class="compare-section animate-on-scroll">
+            <div class="container">
+                <h2>Compare Countries</h2>
+                <p class="section-description">Select up to 10 countries to compare their women's rights policies across all four areas.</p>
+
+                <div class="country-selector">
+                    <div class="selector-header">
+                        <h3>Select Countries to Compare</h3>
+                        <span id="selectedCount" class="count-indicator">0/10 selected</span>
+                    </div>
+
+                    <div class="country-grid" id="countryGrid">
+                        <!-- Countries will be populated by JavaScript -->
+                    </div>
+
+                    <div class="comparison-controls">
+                        <button onclick="clearSelection()" class="secondary-button">Clear All</button>
+                        <button onclick="generateComparison()" id="compareButton" disabled>Compare Selected Countries</button>
+                    </div>
+                </div>
+
+                <div id="comparisonResults" class="comparison-results" style="display: none;">
+                    <div class="comparison-header">
+                        <h3>Policy Comparison</h3>
+                        <button onclick="hideComparison()" class="close-button">×</button>
+                    </div>
+
+                    <div class="comparison-tabs">
+                        <button class="tab-button active" onclick="showTab(event, 'table')">Table View</button>
+                        <button class="tab-button" onclick="showTab(event, 'chart')">Chart View</button>
+                    </div>
+
+                    <div id="tableView" class="tab-content active">
+                        <div class="comparison-table-container">
+                            <table id="comparisonTable" class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Country</th>
+                                        <th>Abortion Rights</th>
+                                        <th>Maternity Leave</th>
+                                        <th>Marriage Rights</th>
+                                        <th>Bodily Autonomy</th>
+                                        <th>Women's Safety</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparisonTableBody">
+                                    <!-- Comparison data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="chartView" class="tab-content">
+                        <div class="chart-container">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verify" class="verify-section animate-on-scroll">
+            <div class="container">
+                <h2>Verify Sources & Data</h2>
+                <p class="section-description">Select any country to see the specific sources and methodology used for our policy categorizations.</p>
+
+                <div class="verification-interface">
+                    <div class="country-lookup">
+                        <h3>Select a Country</h3>
+                        <div class="lookup-controls">
+                            <select id="countrySelect" class="country-dropdown">
+                                <option value="">Choose a country...</option>
+                            </select>
+                            <button onclick="lookupCountry()" id="lookupButton" disabled>Show Sources</button>
+                        </div>
+                    </div>
+
+                    <div id="verificationResults" class="verification-results" style="display: none;">
+                        <div class="verification-header">
+                            <h3 id="selectedCountryName">Country Name</h3>
+                            <button onclick="hideVerification()" class="close-button">×</button>
+                        </div>
+
+                        <div class="policy-breakdown">
+                            <div class="policy-item">
+                                <h4>🏥 Abortion Rights</h4>
+                                <div class="policy-details">
+                                    <div class="current-status" id="abortionStatus"></div>
+                                    <div class="scoring-rationale" id="abortionRationale"></div>
+                                    <div class="sources-list" id="abortionSources"></div>
+                                </div>
+                            </div>
+
+                            <div class="policy-item">
+                                <h4>👶 Maternity Leave</h4>
+                                <div class="policy-details">
+                                    <div class="current-status" id="maternityStatus"></div>
+                                    <div class="scoring-rationale" id="maternityRationale"></div>
+                                    <div class="sources-list" id="maternitySources"></div>
+                                </div>
+                            </div>
+
+                            <div class="policy-item">
+                                <h4>💍 Marriage Rights</h4>
+                                <div class="policy-details">
+                                    <div class="current-status" id="marriageStatus"></div>
+                                    <div class="scoring-rationale" id="marriageRationale"></div>
+                                    <div class="sources-list" id="marriageSources"></div>
+                                </div>
+                            </div>
+
+                            <div class="policy-item">
+                                <h4>⚖️ Bodily Autonomy</h4>
+                                <div class="policy-details">
+                                    <div class="current-status" id="bodilyRightsStatus"></div>
+                                    <div class="scoring-rationale" id="bodilyRightsRationale"></div>
+                                    <div class="sources-list" id="bodilyRightsSources"></div>
+                                </div>
+                            </div>
+
+                            <div class="policy-item">
+                                <h4>🛡️ Women's Safety</h4>
+                                <div class="policy-details">
+                                    <div class="current-status" id="safetyStatus"></div>
+                                    <div class="scoring-rationale" id="safetyRationale"></div>
+                                    <div class="sources-list" id="safetySources"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="methodology-note">
+                            <h4>Scoring Methodology</h4>
+                            <div class="methodology-explanation">
+                                <div class="score-definition">
+                                    <span class="score-badge score-3">3 - Strong</span>
+                                    <span class="score-description">Comprehensive legal protections with accessible implementation</span>
+                                </div>
+                                <div class="score-definition">
+                                    <span class="score-badge score-2">2 - Moderate</span>
+                                    <span class="score-description">Legal protections exist but with significant limitations or barriers</span>
+                                </div>
+                                <div class="score-definition">
+                                    <span class="score-badge score-1">1 - Limited</span>
+                                    <span class="score-description">Minimal legal protections or significant restrictions in place</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="country-search" class="search-section animate-on-scroll">
+            <div class="container">
+                <h2>Country-Specific Information</h2>
+                <div class="search-container">
+                    <input type="text" id="countrySearch" placeholder="Search for a country...">
+                    <button onclick="searchCountry()">Search</button>
+                </div>
+                <div id="countryResults" class="country-results"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Women's Rights Policy Dashboard. Data sourced from various international organizations and government databases.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

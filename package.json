@@ -1,0 +1,28 @@
+{
+  "name": "women-rights-policy-website",
+  "version": "1.0.0",
+  "description": "A website dedicated to displaying women-related policies around the world, focusing on abortion, maternity leave, marriage, and bodily rights",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=3030",
+    "dev": "live-server --port=3030 --watch=.",
+    "build": "echo 'Static site - no build process needed'"
+  },
+  "keywords": [
+    "women-rights",
+    "policy",
+    "abortion",
+    "maternity-leave",
+    "marriage",
+    "bodily-rights",
+    "global-policy"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0"
+  }
+}
