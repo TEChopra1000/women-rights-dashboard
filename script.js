@@ -1,5 +1,5 @@
 // ── Chart instances (stored so we can highlight segments later) ───────────
-const charts = { abortion: null, maternity: null, marriage: null, bodilyRights: null, safety: null };
+const charts = { abortion: null, maternity: null, marriage: null, bodilyRights: null, safety: null, parliament: null, economics: null };
 
 // Original colors for each chart — needed to restore after clearing explorer
 const BASE_COLORS = {
@@ -328,6 +328,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('countrySearch').addEventListener('keypress', e => {
         if (e.key === 'Enter') searchCountry();
     });
+
+    document.getElementById('rankInput').addEventListener('keypress', e => {
+        if (e.key === 'Enter') rankCountry();
+    });
+
+    initParliamentChart();
+    initEconomicChart();
+    initChoroplethMap();
 });
 
 // ── Hamburger ─────────────────────────────────────────────────────────────
@@ -664,8 +672,14 @@ function searchCountry() {
 
     if (key) {
         const d = countryData[key];
+        const ex = countryExtras[key] || {};
+        const trendBadge = ex.trend ? buildTrendBadge(ex.trend) : '';
+        const enfBadge   = ex.enforcementGap
+            ? `<span class="badge badge-enforcement">⚠ Law vs. Enforcement Gap</span>`
+            : '';
         out.innerHTML = `
             <h3>${key}</h3>
+            ${(trendBadge || enfBadge) ? `<div class="badge-row">${trendBadge}${enfBadge}</div>` : ''}
             <div class="country-info">
                 <div class="info-section"><h4>🏥 Abortion Rights</h4><p>${d.abortion}</p></div>
                 <div class="info-section"><h4>👶 Maternity Leave</h4><p>${d.maternity}</p></div>

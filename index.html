@@ -6,6 +6,8 @@
     <title>Women's Rights Policy Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4.3.0/build/index.umd.min.js"></script>
 </head>
 <body>
     <header>
@@ -25,6 +27,9 @@
                 <li><a href="#marriage">Marriage Rights</a></li>
                 <li><a href="#bodily-rights">Bodily Autonomy</a></li>
                 <li><a href="#safety">Women's Safety</a></li>
+                <li><a href="#world-map">World Map</a></li>
+                <li><a href="#politics">Politics</a></li>
+                <li><a href="#economics">Economics</a></li>
                 <li><a href="#compare">Compare Countries</a></li>
                 <li><a href="#verify">Verify Sources</a></li>
             </ul>
@@ -65,6 +70,45 @@
                             <option value="">Select a country...</option>
                         </select>
                         <button class="explorer-clear-btn" id="explorerClearBtn" onclick="clearExplorer()" style="display:none">Clear</button>
+                    </div>
+                </div>
+
+                <div class="rank-widget">
+                    <p class="explorer-label">How does my country rank?</p>
+                    <div class="explorer-row">
+                        <input type="text" id="rankInput" placeholder="Enter a country name..." class="rank-input">
+                        <button onclick="rankCountry()">Show Rank</button>
+                    </div>
+                    <div id="rankResult" class="rank-result" style="display:none"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="world-map" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Global Policy Map</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Select a metric to see how our 15 tracked countries compare on the world map. Countries with data are colored green (strong), orange (moderate), or red (limited). Gray indicates data not yet collected.</p>
+                        <div class="map-controls">
+                            <label for="mapMetricSelect" class="explorer-label">Show metric:</label>
+                            <select id="mapMetricSelect" class="country-dropdown">
+                                <option value="abortion">Abortion Rights</option>
+                                <option value="maternity">Maternity Leave</option>
+                                <option value="marriage">Marriage Rights</option>
+                                <option value="bodilyRights">Bodily Autonomy</option>
+                                <option value="safety">Women's Safety</option>
+                            </select>
+                        </div>
+                        <div class="map-legend">
+                            <span class="legend-item"><span class="legend-dot" style="background:#30d158"></span>Strong</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#ff9f0a"></span>Moderate</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#ff453a"></span>Limited</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#d1d1d6"></span>No data</span>
+                        </div>
+                    </div>
+                    <div class="chart-container map-chart-container">
+                        <canvas id="choroplethMap"></canvas>
                     </div>
                 </div>
             </div>
@@ -180,6 +224,50 @@
             </div>
         </section>
 
+        <section id="politics" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Political Representation</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Percentage of seats held by women in national parliaments (lower or single house). Globally, women hold only 27.5% of legislative seats. Achieving 50% parity remains a challenge in every region.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://data.ipu.org/women-ranking" target="_blank">IPU Parlanda — Women in National Parliaments (2024/25)</a></li>
+                                <li><a href="https://www.unwomen.org/en/digital-library/publications/2024/09/women-in-politics-2024" target="_blank">UN Women — Women in Politics 2024</a></li>
+                                <li><a href="https://www.cfr.org/trackers/womens-power-index" target="_blank">CFR — Women's Power Index</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="parliamentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="economics" class="policy-section animate-on-scroll">
+            <div class="container">
+                <h2>Economic Participation</h2>
+                <div class="policy-content">
+                    <div class="policy-description">
+                        <p>Gender pay gap (unadjusted median earnings gap %) and female labour force participation rate (% of female population aged 15+). Economic independence is foundational to women's rights — legal protections alone are insufficient without economic parity.</p>
+                        <div class="sources">
+                            <h4>Sources:</h4>
+                            <ul>
+                                <li><a href="https://stats.oecd.org/Index.aspx?DataSetCode=GENDER_EMP" target="_blank">OECD — Employment: Gender Indicators</a></li>
+                                <li><a href="https://ilostat.ilo.org/data/" target="_blank">ILO — ILOSTAT Labour Statistics</a></li>
+                                <li><a href="https://www.weforum.org/publications/global-gender-gap-report-2025/" target="_blank">WEF — Global Gender Gap Report 2025</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="economicChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="compare" class="compare-section animate-on-scroll">
             <div class="container">
                 <h2>Compare Countries</h2>
@@ -204,7 +292,10 @@
                 <div id="comparisonResults" class="comparison-results" style="display: none;">
                     <div class="comparison-header">
                         <h3>Policy Comparison</h3>
-                        <button onclick="hideComparison()" class="close-button">×</button>
+                        <div class="comparison-header-actions">
+                            <button onclick="exportCSV()" class="secondary-button export-csv-btn">Export CSV</button>
+                            <button onclick="hideComparison()" class="close-button">×</button>
+                        </div>
                     </div>
 
                     <div class="comparison-tabs">
