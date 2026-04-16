@@ -13,7 +13,7 @@
       gtag('js', new Date());
       gtag('config', 'G-GRF4VJJDEH');
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.3"></script>
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4.3.0/build/index.umd.min.js"></script>
 </head>
@@ -71,16 +71,6 @@
                     </div>
                 </div>
 
-                <div class="country-explorer">
-                    <p class="explorer-label">Highlight a country across all charts</p>
-                    <div class="explorer-row">
-                        <select id="explorerSelect" class="country-dropdown">
-                            <option value="">Select a country...</option>
-                        </select>
-                        <button class="explorer-clear-btn" id="explorerClearBtn" onclick="clearExplorer()" style="display:none">Clear</button>
-                    </div>
-                </div>
-
                 <div class="rank-widget">
                     <p class="explorer-label">How does my country rank?</p>
                     <div class="explorer-row">
@@ -109,14 +99,28 @@
                             </select>
                         </div>
                         <div class="map-legend">
-                            <span class="legend-item"><span class="legend-dot" style="background:#30d158"></span>Strong</span>
-                            <span class="legend-item"><span class="legend-dot" style="background:#ff9f0a"></span>Moderate</span>
-                            <span class="legend-item"><span class="legend-dot" style="background:#ff453a"></span>Limited</span>
-                            <span class="legend-item"><span class="legend-dot" style="background:#d1d1d6"></span>No data</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#22c55e"></span>Strong</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Moderate</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Limited</span>
+                            <span class="legend-item"><span class="legend-dot" style="background:#beb6dc"></span>No data</span>
                         </div>
                     </div>
                     <div class="chart-container map-chart-container">
                         <canvas id="choroplethMap"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="explorer-section animate-on-scroll">
+            <div class="container">
+                <div class="country-explorer">
+                    <p class="explorer-label">Highlight a country across all charts</p>
+                    <div class="explorer-row">
+                        <select id="explorerSelect" class="country-dropdown">
+                            <option value="">Select a country...</option>
+                        </select>
+                        <button class="explorer-clear-btn" id="explorerClearBtn" onclick="clearExplorer()" style="display:none">Clear</button>
                     </div>
                 </div>
             </div>
@@ -259,7 +263,7 @@
                 <h2>Economic Participation</h2>
                 <div class="policy-content">
                     <div class="policy-description">
-                        <p>Gender pay gap (unadjusted median earnings gap %) and female labour force participation rate (% of female population aged 15+). Economic independence is foundational to women's rights — legal protections alone are insufficient without economic parity.</p>
+                        <p>Gender pay gap (unadjusted median earnings gap %) and female labour force participation rate (% of female population aged 15+). Economic data helps reveal how policy frameworks translate — or don't — into measurable real-world outcomes across countries.</p>
                         <div class="sources">
                             <h4>Sources:</h4>
                             <ul>
@@ -435,7 +439,10 @@
             <div class="container">
                 <h2>Country-Specific Information</h2>
                 <div class="search-container">
-                    <input type="text" id="countrySearch" placeholder="Search for a country...">
+                    <div class="search-input-wrap">
+                        <input type="text" id="countrySearch" placeholder="Search for a country..." autocomplete="off">
+                        <ul id="countryAutocomplete" class="autocomplete-list" style="display:none"></ul>
+                    </div>
                     <button onclick="searchCountry()">Search</button>
                 </div>
                 <div id="countryResults" class="country-results"></div>

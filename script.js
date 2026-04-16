@@ -1,3 +1,7 @@
+// ── Chart.js global defaults — dark/glass theme ───────────────────────────
+Chart.defaults.color = 'rgba(28,28,46,0.52)';
+Chart.defaults.borderColor = 'rgba(0,0,0,0.08)';
+
 // ── Chart instances (stored so we can highlight segments later) ───────────
 const charts = { abortion: null, maternity: null, marriage: null, bodilyRights: null, safety: null, parliament: null, economics: null };
 
@@ -325,8 +329,62 @@ document.addEventListener('DOMContentLoaded', function () {
     setupActiveNav();
     animateCounters();
 
-    document.getElementById('countrySearch').addEventListener('keypress', e => {
-        if (e.key === 'Enter') searchCountry();
+    // ── Country search autocomplete ──────────────────────────────────────────
+    const searchInput = document.getElementById('countrySearch');
+    const acList      = document.getElementById('countryAutocomplete');
+    const allCountries = Object.keys(countryData);
+    let acActiveIdx = -1;
+
+    searchInput.addEventListener('input', () => {
+        acActiveIdx = -1;
+        const val = searchInput.value.trim().toLowerCase();
+        if (!val) { acList.style.display = 'none'; return; }
+        // starts-with first, then contains
+        const starts   = allCountries.filter(c => c.toLowerCase().startsWith(val));
+        const contains = allCountries.filter(c => !c.toLowerCase().startsWith(val) && c.toLowerCase().includes(val));
+        const matches  = [...starts, ...contains];
+        if (!matches.length) { acList.style.display = 'none'; return; }
+        acList.innerHTML = matches
+            .map(c => `<li class="autocomplete-item" data-value="${c}">${c}</li>`)
+            .join('');
+        acList.style.display = 'block';
+    });
+
+    acList.addEventListener('mousedown', e => {
+        const item = e.target.closest('.autocomplete-item');
+        if (!item) return;
+        searchInput.value = item.dataset.value;
+        acList.style.display = 'none';
+        searchCountry();
+    });
+
+    searchInput.addEventListener('blur', () => {
+        setTimeout(() => { acList.style.display = 'none'; acActiveIdx = -1; }, 150);
+    });
+
+    searchInput.addEventListener('keydown', e => {
+        const items = acList.querySelectorAll('.autocomplete-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            acActiveIdx = Math.min(acActiveIdx + 1, items.length - 1);
+            items.forEach((el, i) => el.classList.toggle('active', i === acActiveIdx));
+            if (items[acActiveIdx]) items[acActiveIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            acActiveIdx = Math.max(acActiveIdx - 1, -1);
+            items.forEach((el, i) => el.classList.toggle('active', i === acActiveIdx));
+        } else if (e.key === 'Enter') {
+            if (acActiveIdx >= 0 && items[acActiveIdx]) {
+                searchInput.value = items[acActiveIdx].dataset.value;
+                acList.style.display = 'none';
+                acActiveIdx = -1;
+                searchCountry();
+                e.preventDefault();
+            }
+        } else if (e.key === 'Escape') {
+            acList.style.display = 'none';
+            acActiveIdx = -1;
+        }
     });
 
     document.getElementById('rankInput').addEventListener('keypress', e => {
@@ -930,4 +988,306 @@ function populateGenericVerificationData(country) {
 
 function hideVerification() {
     document.getElementById('verificationResults').style.display = 'none';
+}
+
+// ── Supplemental country data (trend, enforcement gap, ISO numeric, parliament, economics) ──
+const countryExtras = {
+    'United States':  { trend: 'declining',  enforcementGap: true,  isoNumeric: 840, parliament: 29.2, payGap: 18, laborParticipation: 57.8 },
+    'Sweden':         { trend: 'stable',     enforcementGap: false, isoNumeric: 752, parliament: 46.4, payGap:  7, laborParticipation: 69.5 },
+    'Saudi Arabia':   { trend: 'improving',  enforcementGap: true,  isoNumeric: 682, parliament: 19.9, payGap: 24, laborParticipation: 33.6 },
+    'Germany':        { trend: 'stable',     enforcementGap: false, isoNumeric: 276, parliament: 34.8, payGap: 18, laborParticipation: 56.1 },
+    'Brazil':         { trend: 'improving',  enforcementGap: true,  isoNumeric: 76,  parliament: 17.7, payGap: 20, laborParticipation: 54.5 },
+    'Norway':         { trend: 'stable',     enforcementGap: false, isoNumeric: 578, parliament: 45.4, payGap:  6, laborParticipation: 68.0 },
+    'Japan':          { trend: 'improving',  enforcementGap: true,  isoNumeric: 392, parliament: 10.3, payGap: 22, laborParticipation: 54.5 },
+    'Canada':         { trend: 'stable',     enforcementGap: false, isoNumeric: 124, parliament: 30.0, payGap: 12, laborParticipation: 61.8 },
+    'India':          { trend: 'improving',  enforcementGap: true,  isoNumeric: 356, parliament: 14.4, payGap: 27, laborParticipation: 24.3 },
+    'Nigeria':        { trend: 'stable',     enforcementGap: true,  isoNumeric: 566, parliament:  3.8, payGap: 29, laborParticipation: 51.4 },
+    'France':         { trend: 'stable',     enforcementGap: false, isoNumeric: 250, parliament: 37.3, payGap: 16, laborParticipation: 52.9 },
+    'Australia':      { trend: 'stable',     enforcementGap: false, isoNumeric: 36,  parliament: 38.0, payGap: 13, laborParticipation: 62.4 },
+    'Poland':         { trend: 'declining',  enforcementGap: true,  isoNumeric: 616, parliament: 27.9, payGap:  8, laborParticipation: 53.7 },
+    'Mexico':         { trend: 'improving',  enforcementGap: true,  isoNumeric: 484, parliament: 50.0, payGap: 17, laborParticipation: 44.9 },
+    'South Korea':    { trend: 'improving',  enforcementGap: true,  isoNumeric: 410, parliament: 19.1, payGap: 31, laborParticipation: 54.9 },
+};
+
+// ── Trend badge helper ────────────────────────────────────────────────────
+function buildTrendBadge(trend) {
+    const map = {
+        improving: { cls: 'badge-improving', label: '↑ Improving' },
+        stable:    { cls: 'badge-stable',    label: '→ Stable'    },
+        declining: { cls: 'badge-declining', label: '↓ Declining' }
+    };
+    const t = map[trend] || map.stable;
+    return `<span class="badge ${t.cls}">${t.label}</span>`;
+}
+
+// ── Rank widget ───────────────────────────────────────────────────────────
+function rankCountry() {
+    const term = document.getElementById('rankInput').value.trim();
+    const out  = document.getElementById('rankResult');
+    if (!term) return;
+
+    const key = Object.keys(countryData).find(c => c.toLowerCase().includes(term.toLowerCase()));
+    if (!key) {
+        out.innerHTML = `<p class="rank-miss">No data found for "${term}". Try one of the 15 countries in the dataset.</p>`;
+        out.style.display = 'block';
+        return;
+    }
+
+    const d  = countryData[key];
+    const ex = countryExtras[key] || {};
+    const s  = d.scores;
+
+    const scoreOf = c => {
+        const sc = countryData[c].scores;
+        return sc.abortion + sc.maternity + sc.marriage + sc.bodilyRights + sc.safety;
+    };
+    const myTotal  = scoreOf(key);
+    const allSorted = Object.keys(countryData).map(c => scoreOf(c)).sort((a, b) => b - a);
+    const rank = allSorted.filter(v => v > myTotal).length + 1;
+    const total = Object.keys(countryData).length;
+
+    const scoreMap = {
+        1: { cls: 'status-weak',     text: 'Limited'  },
+        2: { cls: 'status-moderate', text: 'Moderate' },
+        3: { cls: 'status-strong',   text: 'Strong'   }
+    };
+    const areaNames = {
+        abortion: 'Abortion Rights', maternity: 'Maternity Leave',
+        marriage: 'Marriage Rights', bodilyRights: 'Bodily Autonomy', safety: "Women's Safety"
+    };
+
+    const enfWarning = ex.enforcementGap ? `
+        <div class="rank-warning">
+            <span class="badge badge-enforcement">⚠ Law vs. Enforcement Gap</span>
+            <p>Legal protections exist but documented gaps in real-world enforcement have been noted for this country.</p>
+        </div>` : '';
+
+    const extraStats = [
+        ex.parliament    != null ? `Parliament: ${ex.parliament}% women`     : '',
+        ex.payGap        != null ? `Pay gap: ${ex.payGap}%`                  : '',
+        ex.laborParticipation != null ? `Labour participation: ${ex.laborParticipation}%` : ''
+    ].filter(Boolean).join(' · ');
+
+    out.innerHTML = `
+        <div class="rank-card">
+            <div class="rank-card-header">
+                <h3>${key}</h3>
+                <div class="rank-badge">Rank #${rank} of ${total}</div>
+            </div>
+            <div class="rank-scores">
+                ${['abortion','maternity','marriage','bodilyRights','safety'].map(k => `
+                    <div class="rank-score-row">
+                        <span class="rank-score-label">${areaNames[k]}</span>
+                        <span class="policy-status ${scoreMap[s[k]].cls}">${scoreMap[s[k]].text}</span>
+                    </div>`).join('')}
+            </div>
+            <div class="rank-meta">
+                ${buildTrendBadge(ex.trend || 'stable')}
+                <span class="rank-total">Overall score: ${myTotal}/15</span>
+            </div>
+            ${extraStats ? `<p class="rank-extra-stats">${extraStats}</p>` : ''}
+            ${enfWarning}
+        </div>`;
+    out.style.display = 'block';
+}
+
+// ── CSV Export ────────────────────────────────────────────────────────────
+function exportCSV() {
+    if (!selectedCountries.length) return;
+    const headers = ['Country', 'Abortion Rights', 'Maternity Leave', 'Marriage Rights', 'Bodily Autonomy', "Women's Safety", 'Overall Score'];
+    const scoreLabel = { 1: 'Limited', 2: 'Moderate', 3: 'Strong' };
+    const rows = selectedCountries.map(c => {
+        const s = countryData[c].scores;
+        const total = s.abortion + s.maternity + s.marriage + s.bodilyRights + s.safety;
+        return [c, scoreLabel[s.abortion], scoreLabel[s.maternity], scoreLabel[s.marriage], scoreLabel[s.bodilyRights], scoreLabel[s.safety], `${total}/15`];
+    });
+    const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'womens_rights_comparison.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ── Political Representation Chart ───────────────────────────────────────
+function initParliamentChart() {
+    const ctx = document.getElementById('parliamentChart');
+    if (!ctx) return;
+    const sorted = Object.entries(countryExtras)
+        .sort((a, b) => b[1].parliament - a[1].parliament);
+    charts.parliament = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: sorted.map(([c]) => c),
+            datasets: [{
+                label: '% Women in Parliament',
+                data: sorted.map(([, ex]) => ex.parliament),
+                backgroundColor: sorted.map(([, ex]) =>
+                    ex.parliament >= 40 ? '#30d158' : ex.parliament >= 25 ? '#ff9f0a' : '#ff453a'
+                ),
+                borderWidth: 0,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: '% Women in National Parliament — IPU 2024/25', font: { size: 15, weight: '600' } },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true, max: 60,
+                    ticks: { callback: v => v + '%' },
+                    title: { display: true, text: '% Women' }
+                }
+            }
+        }
+    });
+}
+
+// ── Economic Metrics Chart ────────────────────────────────────────────────
+function initEconomicChart() {
+    const ctx = document.getElementById('economicChart');
+    if (!ctx) return;
+    const sorted = Object.entries(countryExtras)
+        .sort((a, b) => b[1].payGap - a[1].payGap);
+    charts.economics = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: sorted.map(([c]) => c),
+            datasets: [
+                {
+                    label: 'Gender Pay Gap (%)',
+                    data: sorted.map(([, ex]) => ex.payGap),
+                    backgroundColor: '#5e5ce6',
+                    borderWidth: 0,
+                    borderRadius: 3
+                },
+                {
+                    label: 'Female Labour Force Participation (%)',
+                    data: sorted.map(([, ex]) => ex.laborParticipation),
+                    backgroundColor: '#007AFF',
+                    borderWidth: 0,
+                    borderRadius: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: { display: true, text: 'Economic Gender Metrics by Country', font: { size: 15, weight: '600' } },
+                legend: { position: 'top', labels: { padding: 16, usePointStyle: true } },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true, max: 100,
+                    ticks: { callback: v => v + '%' },
+                    title: { display: true, text: 'Percentage (%)' }
+                },
+                x: {
+                    ticks: { maxRotation: 40, minRotation: 30 },
+                    title: { display: true, text: 'Country' }
+                }
+            }
+        }
+    });
+}
+
+// ── Choropleth World Map ──────────────────────────────────────────────────
+async function initChoroplethMap() {
+    const canvas = document.getElementById('choroplethMap');
+    if (!canvas) return;
+
+    let world;
+    try {
+        const res = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+        world = await res.json();
+    } catch (e) {
+        canvas.parentElement.innerHTML = '<p style="text-align:center;color:var(--text-2);padding:3rem">Map could not load — check your network connection.</p>';
+        return;
+    }
+
+    // Convert TopoJSON → GeoJSON
+    const features = topojson.feature(world, world.objects.countries).features;
+
+    // Build ISO numeric → country lookup from countryExtras
+    const isoLookup = {};
+    Object.entries(countryExtras).forEach(([name, ex]) => {
+        isoLookup[ex.isoNumeric] = name;
+    });
+
+    const colorForScore = score => {
+        if (score === 3) return 'rgba(34,197,94,0.80)';
+        if (score === 2) return 'rgba(245,158,11,0.80)';
+        if (score === 1) return 'rgba(239,68,68,0.80)';
+        return 'rgba(190,182,220,0.55)';
+    };
+
+    let currentMetric = document.getElementById('mapMetricSelect').value || 'abortion';
+
+    const getBgColor = (feature, metric) => {
+        const name = isoLookup[feature.id];
+        if (!name) return colorForScore(null);
+        return colorForScore(countryData[name]?.scores[metric] ?? null);
+    };
+
+    let choroplethChart = new Chart(canvas.getContext('2d'), {
+        type: 'choropleth',
+        data: {
+            labels: features.map(f => isoLookup[f.id] || ''),
+            datasets: [{
+                label: 'Policy Score',
+                data: features.map(f => ({ feature: f, value: (() => {
+                    const name = isoLookup[f.id];
+                    return (name && countryData[name]) ? countryData[name].scores[currentMetric] : null;
+                })() })),
+                backgroundColor: ctx => {
+                    const f = ctx.raw?.feature;
+                    return f ? getBgColor(f, currentMetric) : colorForScore(null);
+                },
+                borderColor: 'rgba(255,255,255,0.85)',
+                borderWidth: 0.8
+            }]
+        },
+        options: {
+            showOutline: true,
+            showGraticule: false,
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const label = ctx.chart.data.labels[ctx.dataIndex];
+                            if (!label) return null;
+                            const val = ctx.raw?.value;
+                            const text = val === 3 ? 'Strong' : val === 2 ? 'Moderate' : val === 1 ? 'Limited' : 'No detailed data';
+                            return `${label}: ${text}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                projection: { axis: 'x', projection: 'equalEarth' },
+                color: { axis: 'x', display: false }
+            }
+        }
+    });
+
+    document.getElementById('mapMetricSelect').addEventListener('change', e => {
+        currentMetric = e.target.value;
+        choroplethChart.data.datasets[0].data = features.map(f => ({
+            feature: f,
+            value: (() => {
+                const name = isoLookup[f.id];
+                return (name && countryData[name]) ? countryData[name].scores[currentMetric] : null;
+            })()
+        }));
+        choroplethChart.update();
+    });
 }
